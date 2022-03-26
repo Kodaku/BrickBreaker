@@ -15,10 +15,8 @@ public class GameManager : MonoBehaviour
     private Ball ball;
     private Player player;
     private float currentUpdateTimer = 0.0f;
-    private float updateTimer = 0.1f;
+    private float updateTimer = 0.05f;
     private bool isHitPresent = false;
-    private float maxQValue = Mathf.NegativeInfinity;
-    private float minQValue = Mathf.Infinity;
     private DataManager dataManager = new DataManager();
     private Debugger debugger;
     // Start is called before the first frame update
@@ -90,7 +88,7 @@ public class GameManager : MonoBehaviour
         print("Player hit");
         player.SetNextState(grid, ball);
         player.QUpdate(1.0f, false);
-        player.UpdateModel(1.0f);
+        // player.UpdateModel(1.0f);
         isHitPresent = false;
     }
 
@@ -116,26 +114,27 @@ public class GameManager : MonoBehaviour
 
             if(!isHitPresent)
                 player.SetNextState(grid, ball);
-            player.UpdateAllTau();
+
+            // player.UpdateAllTau();
+
             if(ballCell.row <= playerCell.row && (ballCell.column < playerCell.column - 1 || ballCell.column > playerCell.column + 1))
             {
                 float reward = Mathf.RoundToInt(-100.0f - Vector2.Distance(player.transform.position, ball.transform.position) * 10.0f);
                 // print(Mathf.RoundToInt(-100.0f - Vector2.Distance(player.transform.position, ball.transform.position) * 10.0f));
                 player.QUpdate(reward, true);
-                player.UpdateModel(reward);
+                // player.UpdateModel(reward);
                 Reset();
             }
             else
             {
                 player.QUpdate(0.0f, false);
-                player.UpdateModel(0.0f);
+                // player.UpdateModel(0.0f);
             }
 
-            for(int i = 0; i < 50; i++)
-            {
-                // print("Planning Step");
-                player.RunSimulation();
-            }
+            // for(int i = 0; i < 50; i++)
+            // {
+            //     player.RunSimulation();
+            // }
 
             currentUpdateTimer = 0.0f;
         }
@@ -143,9 +142,9 @@ public class GameManager : MonoBehaviour
 
     private void Reset()
     {
-        // dataManager.RegisterObservation();
+        dataManager.RegisterObservation();
         dataManager.Reset();
-        // player.SaveData();
+        player.SaveData();
         ball.Reset();
         player.Reset();
         debugger.Reset();
